@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Separe voz, bateria, baixo, guitarra, piano e outros instrumentos com inteligência artificial."
+    />
+    <meta name="theme-color" content="#050a14" />
+    <title>MUSICAI</title>
+    <link href="assets/css2_ac990486f183.css" rel="stylesheet" />
+    <link href="styles.css" rel="stylesheet" />
+    <script src="assets/iconify_654a1ef798a3.js"></script>
+    <script src="config.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#workspace">Ir para o separador de áudio</a>
+    <div id="cursor" aria-hidden="true"></div>
+    <div class="noise-overlay" aria-hidden="true"></div>
+    <div class="ambient-layer" aria-hidden="true">
+      <span class="liquid-blob liquid-blob--blue"></span>
+      <span class="liquid-blob liquid-blob--purple"></span>
+      <span class="liquid-blob liquid-blob--cyan"></span>
+      <div class="audio-grid"></div>
+    </div>
+
+    <header class="site-header">
+      <nav
+        class="nav-shell glass-panel glass-panel--static"
+        aria-label="Principal"
+      >
+        <a class="brand cursor-hover" href="#top" aria-label="StemLab, início">
+          <span class="brand__name">MUSICAI</span>
+          <span class="brand__mark" aria-hidden="true">
+            <span
+              class="iconify"
+              data-icon="lucide:audio-waveform"
+              data-width="18"
+            ></span>
+          </span>
+        </a>
+        <div class="nav-links">
+          <a class="cursor-hover" href="#como-funciona">Como funciona</a>
+          <a class="cursor-hover" href="#stems">6 faixas</a>
+        </div>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero__copy reveal active">
+          <h1 id="hero-title">
+            Separe a música.
+            <span>Encontre cada instrumento.</span>
+          </h1>
+          <p class="hero__lead">
+            Envie um MP3 ou WAV e receba voz, bateria, baixo, guitarra, piano e
+            outros em arquivos separados — organizados em um único ZIP.
+          </p>
+          <div class="hero__trust" aria-label="Características do serviço">
+            <span
+              ><i class="iconify" data-icon="lucide:shield-check"></i> Upload
+              protegido</span
+            >
+            <span
+              ><i class="iconify" data-icon="lucide:activity"></i> Status em
+              tempo real</span
+            >
+            <span
+              ><i class="iconify" data-icon="lucide:archive"></i> Download em
+              ZIP</span
+            >
+          </div>
+        </div>
+
+        <div class="hero__visual" aria-hidden="true">
+          <div class="orbital">
+            <div class="orbital__core">
+              <span
+                class="iconify"
+                data-icon="lucide:audio-lines"
+                data-width="36"
+              ></span>
+            </div>
+            <span class="orbital__ring orbital__ring--one"></span>
+            <span class="orbital__ring orbital__ring--two"></span>
+            <div class="waveform">
+              <i style="--height: 26%"></i><i style="--height: 48%"></i>
+              <i style="--height: 76%"></i><i style="--height: 40%"></i>
+              <i style="--height: 92%"></i><i style="--height: 64%"></i>
+              <i style="--height: 36%"></i><i style="--height: 82%"></i>
+              <i style="--height: 52%"></i><i style="--height: 30%"></i>
+              <i style="--height: 68%"></i><i style="--height: 44%"></i>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section
+        class="workspace-section"
+        id="workspace"
+        aria-labelledby="workspace-title"
+      >
+        <div class="workspace-grid">
+          <article class="workspace glass-panel glass-panel--static">
+            <header class="workspace__header">
+              <div>
+                <p class="micro-label" id="state-label">Novo processamento</p>
+                <h2 id="workspace-title">Seu áudio, em camadas.</h2>
+              </div>
+            </header>
+
+            <div
+              id="status-announcer"
+              class="sr-only"
+              role="status"
+              aria-live="polite"
+              aria-atomic="true"
+            ></div>
+            <div id="app-view" class="app-view">
+              <noscript>
+                <div class="message-card message-card--error">
+                  Ative o JavaScript para enviar e acompanhar seu áudio.
+                </div>
+              </noscript>
+            </div>
+          </article>
+
+          <aside class="stem-preview" id="stems" aria-labelledby="stems-title">
+            <div class="stem-preview__heading">
+              <p class="micro-label">Uma passagem · seis resultados</p>
+              <h2 id="stems-title">Tudo que você recebe</h2>
+            </div>
+            <div class="stem-grid">
+              <div class="stem-card glass-panel">
+                <span class="stem-card__icon stem-card__icon--blue"
+                  ><i class="iconify" data-icon="lucide:mic-2"></i
+                ></span>
+                <div><strong>Voz</strong><small>Vocals</small></div>
+                <span class="stem-card__wave">▂▅▇▄▆</span>
+              </div>
+              <div class="stem-card glass-panel">
+                <span class="stem-card__icon stem-card__icon--purple"
+                  ><i class="iconify" data-icon="lucide:drum"></i
+                ></span>
+                <div><strong>Bateria</strong><small>Drums</small></div>
+                <span class="stem-card__wave">▆▂▇▃▆</span>
+              </div>
+              <div class="stem-card glass-panel">
+                <span class="stem-card__icon stem-card__icon--cyan"
+                  ><i class="iconify" data-icon="lucide:music-2"></i
+                ></span>
+                <div><strong>Baixo</strong><small>Bass</small></div>
+                <span class="stem-card__wave">▃▅▃▆▂</span>
+              </div>
+              <div class="stem-card glass-panel">
+                <span class="stem-card__icon stem-card__icon--amber"
+                  ><i class="iconify" data-icon="lucide:guitar"></i
+                ></span>
+                <div><strong>Guitarra</strong><small>Guitar</small></div>
+                <span class="stem-card__wave">▂▇▅▃▆</span>
+              </div>
+              <div class="stem-card glass-panel">
+                <span class="stem-card__icon stem-card__icon--emerald"
+                  ><i class="iconify" data-icon="lucide:piano"></i
+                ></span>
+                <div><strong>Piano</strong><small>Piano</small></div>
+                <span class="stem-card__wave">▅▃▆▂▇</span>
+              </div>
+              <div class="stem-card glass-panel">
+                <span class="stem-card__icon stem-card__icon--rose"
+                  ><i class="iconify" data-icon="lucide:sparkles"></i
+                ></span>
+                <div><strong>Outros</strong><small>Other</small></div>
+                <span class="stem-card__wave">▃▆▂▅▇</span>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section
+        class="how-section"
+        id="como-funciona"
+        aria-labelledby="how-title"
+      >
+        <header class="section-heading">
+          <p class="micro-label">Do arquivo ao estúdio</p>
+          <h2 id="how-title">
+            Simples para você.<br /><span>Potente por trás.</span>
+          </h2>
+        </header>
+        <ol class="how-grid">
+          <li class="how-card glass-panel">
+            <span class="how-card__number">01</span>
+            <span class="how-card__icon"
+              ><i class="iconify" data-icon="lucide:upload-cloud"></i
+            ></span>
+            <h3>Envie seu áudio</h3>
+            <p>
+              Selecione um arquivo MP3 ou WAV. Validamos tudo antes do envio.
+            </p>
+          </li>
+          <li class="how-card glass-panel">
+            <span class="how-card__number">02</span>
+            <span class="how-card__icon"
+              ><i class="iconify" data-icon="lucide:audio-waveform"></i
+            ></span>
+            <h3>Acompanhe a separação</h3>
+            <p>
+              O job continua no servidor e você acompanha cada estado
+              confirmado.
+            </p>
+          </li>
+          <li class="how-card glass-panel">
+            <span class="how-card__number">03</span>
+            <span class="how-card__icon"
+              ><i class="iconify" data-icon="lucide:download"></i
+            ></span>
+            <h3>Baixe os seis stems</h3>
+            <p>
+              Ao final, todas as faixas chegam organizadas em um único pacote
+              ZIP.
+            </p>
+          </li>
+        </ol>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <a class="brand" href="#top"
+          ><span class="brand__name">MUSICAI</span></a
+        >
+        <p>Separação de áudio com clareza em cada etapa.</p>
+      </div>
+    </footer>
+
+    <dialog id="confirmation-dialog" class="confirmation-dialog glass-panel">
+      <form method="dialog">
+        <span class="dialog-icon"
+          ><i class="iconify" data-icon="lucide:refresh-cw"></i
+        ></span>
+        <h2>Processar outro arquivo?</h2>
+        <p>O acompanhamento do job atual será encerrado neste navegador.</p>
+        <div class="dialog-actions">
+          <button class="button button--secondary cursor-hover" value="cancel">
+            Continuar aqui
+          </button>
+          <button class="button button--primary cursor-hover" value="confirm">
+            Novo arquivo
+          </button>
+        </div>
+      </form>
+    </dialog>
+
+    <div
+      id="toast-region"
+      class="toast-region"
+      aria-live="polite"
+      aria-atomic="true"
+    ></div>
+    <div id="dev-state-switcher" class="dev-switcher" hidden></div>
+
+    <script type="module" src="app.js"></script>
+  </body>
+</html>

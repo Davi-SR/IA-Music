@@ -1,5 +1,5 @@
 # Requires Python 3.10. FFmpeg must be installed separately and available on PATH.
-yt-dlp>=2025.6.30
+yt-dlp>=2026.7.4
 demucs>=4.0.1
 numpy>=1.23.5,<1.24
 basic-pitch>=0.4.0
@@ -7,3 +7,6 @@ setuptools==81.0.0
 tensorflow==2.11.1; sys_platform == "win32"
 tensorflow-intel==2.11.1; sys_platform == "win32"
 tensorflow-io-gcs-filesystem==0.31.0; sys_platform == "win32"
+fastapi>=0.139.2
+uvicorn>=0.51.0
+python-multipart>=0.0.22

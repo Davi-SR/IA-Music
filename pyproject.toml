@@ -1,16 +1,25 @@
 [project]
 name = "ia-music"
 version = "0.1.0"
-description = "Add your description here"
+description = "AI pipeline and FastAPI application for six-stem audio separation."
 readme = "README.md"
 requires-python = ">=3.10,<3.11"
 dependencies = [
     "basic-pitch>=0.4.0",
     "demucs>=4.0.1",
+    "fastapi>=0.139.2",
     "numpy>=1.23.5,<1.24",
+    "python-multipart>=0.0.22",
     "setuptools==81.0.0",
     "tensorflow==2.11.1; sys_platform == 'win32'",
     "tensorflow-intel==2.11.1; sys_platform == 'win32'",
     "tensorflow-io-gcs-filesystem==0.31.0; sys_platform == 'win32'",
+    "uvicorn>=0.51.0",
     "yt-dlp>=2026.7.4",
+]
+
+[dependency-groups]
+dev = [
+    "httpx>=0.28.1",
+    "pytest>=8.4.2",
 ]

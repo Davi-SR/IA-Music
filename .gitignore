@@ -7,4 +7,7 @@ wheels/
 *.egg-info
 
 # Virtual environments
-.venv
+.venv/
+
+# Generated pipeline data
+data/jobs/

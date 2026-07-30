@@ -1,0 +1,63 @@
+.nav-links a {
+  position: relative;
+}
+
+.nav-links a.active {
+  color: #fff;
+}
+
+.nav-links a.active::after {
+  position: absolute;
+  right: 0;
+  bottom: -9px;
+  left: 0;
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #007bff, #00bfff);
+  box-shadow: 0 0 12px rgba(0, 191, 255, 0.5);
+  content: "";
+}
+
+.home-booting #workspace,
+.home-booting .nav-links,
+.musics-booting main {
+  visibility: hidden;
+  opacity: 0;
+}
+
+.home-ready #workspace,
+.home-ready .nav-links,
+.musics-ready main {
+  visibility: visible;
+  opacity: 1;
+  transition: opacity 180ms ease-out;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  a,
+  button,
+  label,
+  summary,
+  [role="button"],
+  input[type="range"],
+  input[type="file"],
+  .button,
+  .icon-button,
+  .transport-play,
+  .track-toggle,
+  .track-download,
+  .range-control,
+  .source-picker__button,
+  .cursor-hover {
+    cursor: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-ready #workspace,
+  .home-ready .nav-links,
+  .musics-ready main {
+    transition: none;
+  }
+}
+
