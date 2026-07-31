@@ -14,6 +14,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
+from backend.auth import (
+    AuthService,
+    install_auth_routes,
+    require_job_owner,
+    require_user,
+)
 from backend.config import Settings
 from backend.jobs import JobManager
 from backend.schemas import (
@@ -82,10 +88,12 @@ def _validate_youtube_url(raw_url: str) -> str:
 def create_app(
     settings: Settings | None = None,
     manager: JobManager | None = None,
+    auth_service: AuthService | None = None,
 ) -> FastAPI:
     """Create the application, allowing dependencies to be injected in tests."""
     resolved_settings = settings or Settings()
     job_manager = manager or JobManager(resolved_settings)
+    resolved_auth = auth_service or AuthService(resolved_settings)
 
     @asynccontextmanager
     async def lifespan(_: FastAPI) -> AsyncIterator[None]:
@@ -99,13 +107,22 @@ def create_app(
     )
     app.state.settings = resolved_settings
     app.state.job_manager = job_manager
+    install_auth_routes(
+        app,
+        resolved_settings,
+        resolved_auth,
+        (
+            path.parent.name
+            for path in resolved_settings.job_root.glob("*/job.json")
+        ),
+    )
 
     if resolved_settings.cors_origins:
         app.add_middleware(
             CORSMiddleware,
             allow_origins=list(resolved_settings.cors_origins),
-            allow_credentials=False,
-            allow_methods=["GET", "POST"],
+            allow_credentials=True,
+            allow_methods=["GET", "POST", "PATCH", "PUT", "DELETE"],
             allow_headers=["Accept", "Content-Type"],
         )
 
@@ -118,8 +135,18 @@ def create_app(
 
     @app.exception_handler(RequestValidationError)
     async def validation_error_handler(
-        _: Request, __: RequestValidationError
+        request: Request, _: RequestValidationError
     ) -> JSONResponse:
+        if request.url.path.startswith("/api/auth/"):
+            return JSONResponse(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                content={
+                    "error": {
+                        "code": "INVALID_AUTH_REQUEST",
+                        "message": "Confira os campos informados e tente novamente.",
+                    }
+                },
+            )
         return JSONResponse(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             content={
@@ -143,9 +170,11 @@ def create_app(
         status_code=status.HTTP_202_ACCEPTED,
     )
     async def create_job(
+        request: Request,
         file: UploadFile | None = File(default=None),
         youtube_url: str | None = Form(default=None),
     ) -> JobCreateResponse:
+        user = require_user(request)
         has_file = file is not None and bool(file.filename)
         has_url = bool(youtube_url and youtube_url.strip())
         if has_file == has_url:
@@ -160,6 +189,7 @@ def create_app(
         if has_url:
             source_url = _validate_youtube_url(youtube_url or "")
             reservation = job_manager.reserve_youtube(source_url)
+            resolved_auth.claim_job(reservation.job_id, user.id)
             record = job_manager.enqueue(reservation)
             return JobCreateResponse(
                 job_id=record.job_id,
@@ -229,6 +259,7 @@ def create_app(
             job_manager.discard(reservation)
             raise ApiError(400, "EMPTY_FILE", "O arquivo enviado está vazio.")
 
+        resolved_auth.claim_job(reservation.job_id, user.id)
         record = job_manager.enqueue(reservation, size_bytes)
         return JobCreateResponse(
             job_id=record.job_id,
@@ -236,14 +267,16 @@ def create_app(
         )
 
     @app.get("/api/jobs/{job_id}", response_model=JobStatusResponse)
-    async def get_job(job_id: str) -> JobStatusResponse:
+    async def get_job(job_id: str, request: Request) -> JobStatusResponse:
+        require_job_owner(request, job_id)
         record = job_manager.get(job_id)
         if record is None:
             raise ApiError(404, "JOB_NOT_FOUND", "Job não encontrado.")
         return job_manager.to_response(record)
 
     @app.get("/api/jobs/{job_id}/download")
-    async def download_job(job_id: str) -> FileResponse:
+    async def download_job(job_id: str, request: Request) -> FileResponse:
+        require_job_owner(request, job_id)
         record = job_manager.get(job_id)
         if record is None:
             raise ApiError(404, "JOB_NOT_FOUND", "Job não encontrado.")

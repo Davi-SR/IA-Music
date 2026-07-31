@@ -1,0 +1,99 @@
+.account-group {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.account-avatar img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  object-fit: cover;
+}
+
+.account-logout {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.035);
+  color: var(--color-muted);
+  cursor: pointer;
+}
+
+.account-logout:hover {
+  border-color: rgba(251, 113, 133, 0.35);
+  color: #fda4af;
+}
+
+.account-layout {
+  width: min(1080px, 100%);
+  margin: 0 auto;
+}
+
+.account-heading {
+  margin-bottom: 34px;
+}
+
+.account-heading h1 {
+  margin: 7px 0 8px;
+  font-size: clamp(2.8rem, 6vw, 5.2rem);
+  font-weight: 400;
+  letter-spacing: -0.065em;
+}
+
+.account-heading > p:last-child {
+  color: var(--color-muted);
+}
+
+.account-layout > .auth-message {
+  margin-bottom: 18px;
+}
+
+.account-grid {
+  display: grid;
+  align-items: start;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.account-grid .account-card {
+  width: auto;
+  padding: 28px;
+}
+
+.account-card h2 {
+  margin-bottom: 18px;
+  font-size: 1.05rem;
+  font-weight: 500;
+}
+
+.account-card--danger {
+  grid-column: 1 / -1;
+  border-color: rgba(251, 113, 133, 0.16);
+}
+
+.account-card--danger p {
+  color: var(--color-muted);
+  font-size: 0.8rem;
+}
+
+.auth-account-loading {
+  min-height: 420px;
+  display: grid;
+  place-items: center;
+  color: var(--color-muted);
+}
+
+@media (max-width: 760px) {
+  .account-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .account-card--danger {
+    grid-column: auto;
+  }
+}

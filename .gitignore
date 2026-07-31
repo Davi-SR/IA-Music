@@ -8,6 +8,18 @@ wheels/
 
 # Virtual environments
 .venv/
+.env
 
-# Generated pipeline data
+# Node / frontend tooling
+node_modules/
+frontend/coverage/
+frontend/playwright-report/
+frontend/test-results/
+*.tsbuildinfo
+
+# Generated pipeline data and private authentication storage
 data/jobs/
+data/*.db
+data/*.db-shm
+data/*.db-wal
+data

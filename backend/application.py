@@ -4,10 +4,11 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.responses import FileResponse
 
 from backend.app import ApiError, create_app as create_base_app
+from backend.auth import require_job_owner, require_user
 from backend.config import Settings
 from backend.jobs import STEMS
 from backend.library import LibraryJobManager
@@ -51,9 +52,13 @@ def create_app(
         app.router.routes.remove(static_mount)
 
     @app.get("/api/library", response_model=LibraryResponse)
-    async def list_library() -> LibraryResponse:
+    async def list_library(request: Request) -> LibraryResponse:
+        user = require_user(request)
+        owned_jobs = request.app.state.auth_service.owned_job_ids(user.id)
         items: list[LibraryItem] = []
         for record in resolved_manager.list_completed():
+            if record.job_id not in owned_jobs:
+                continue
             available_stems = [
                 stem
                 for stem in STEMS
@@ -89,7 +94,10 @@ def create_app(
         return LibraryResponse(items=items)
 
     @app.get("/api/jobs/{job_id}/stems/{stem}")
-    async def stream_stem(job_id: str, stem: str) -> FileResponse:
+    async def stream_stem(
+        job_id: str, stem: str, request: Request
+    ) -> FileResponse:
+        require_job_owner(request, job_id)
         record = resolved_manager.get(job_id)
         if record is None:
             raise ApiError(404, "JOB_NOT_FOUND", "Música não encontrada.")
@@ -104,7 +112,10 @@ def create_app(
         )
 
     @app.get("/api/jobs/{job_id}/stems/{stem}/download")
-    async def download_stem(job_id: str, stem: str) -> FileResponse:
+    async def download_stem(
+        job_id: str, stem: str, request: Request
+    ) -> FileResponse:
+        require_job_owner(request, job_id)
         record = resolved_manager.get(job_id)
         if record is None:
             raise ApiError(404, "JOB_NOT_FOUND", "Música não encontrada.")

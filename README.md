@@ -4,9 +4,13 @@ Aplicação FastAPI para separar uma música em seis stems com o modelo
 `htdemucs_6s`: voz, bateria, baixo, guitarra, piano e outros. A origem pode ser
 um arquivo MP3/WAV ou a URL de um vídeo do YouTube.
 
+O frontend usa React, TypeScript e Vite, com duas páginas: Home e Minhas
+Músicas/mixer. O FastAPI continua servindo o build e todos os contratos da API.
+
 ## Pré-requisitos
 
-- Python 3.10
+- Python 3.10 ou superior
+- Node.js 20 ou superior
 - FFmpeg e FFprobe disponíveis no `PATH`
 - `uv`
 
@@ -20,13 +24,34 @@ Reabra o terminal/IDE após a instalação e confirme com `ffmpeg -version`.
 
 ## Instalação e execução
 
+Backend:
+
 ```powershell
 uv sync
 uv run python main.py
 ```
 
-Abra `http://127.0.0.1:8000`. A própria API serve o front-end. A documentação
-OpenAPI fica em `http://127.0.0.1:8000/docs`.
+Frontend, somente quando o código React for alterado:
+
+```powershell
+cd frontend
+npm install
+npm run build
+cd ..
+```
+
+Abra `http://127.0.0.1:8000`. A própria API serve o build em
+`Front/glass-effect2`. A documentação OpenAPI fica em
+`http://127.0.0.1:8000/docs`.
+
+Durante o desenvolvimento do frontend:
+
+```powershell
+cd frontend
+npm run dev
+```
+
+O Vite encaminha `/api` para `http://127.0.0.1:8000`.
 
 ## API
 
@@ -44,11 +69,14 @@ POST /api/jobs
 multipart: youtube_url=https://www.youtube.com/watch?v=...
 ```
 
-Depois consulte e baixe:
+Depois consulte, reproduza e baixe:
 
 ```text
 GET /api/jobs/{job_id}
 GET /api/jobs/{job_id}/download
+GET /api/library
+GET /api/jobs/{job_id}/stems/{stem}
+GET /api/jobs/{job_id}/stems/{stem}/download
 GET /api/health
 ```
 
@@ -71,9 +99,28 @@ Variáveis opcionais:
 
 ## Testes
 
+Backend:
+
 ```powershell
 uv run pytest
 ```
 
-Os testes usam um gerenciador de jobs falso; não baixam vídeos e não executam
-FFmpeg ou Demucs.
+Frontend:
+
+```powershell
+cd frontend
+npm run lint
+npm run typecheck
+npm run test
+npm run build
+npm run test:visual
+```
+
+Os testes do backend usam um gerenciador de jobs falso; não baixam vídeos e não
+executam FFmpeg ou Demucs. O relatório da migração React e a comparação visual
+estão em `frontend/MIGRATION.md`.
+
+
+## Autenticação e bibliotecas privadas
+
+Consulte `AUTHENTICATION.md` e `.env.example` para configurar SQLite, login Google, cookies e recuperação de senha por SMTP.

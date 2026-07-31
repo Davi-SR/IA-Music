@@ -17,6 +17,7 @@ from backend.schemas import JobStatus
 def build_library(tmp_path: Path) -> tuple[TestClient, LibraryJobManager, str]:
     settings = Settings(
         job_root=tmp_path / "jobs",
+        database_path=tmp_path / "test.db",
         frontend_dir=tmp_path / "missing-front",
         max_upload_bytes=1024,
         max_concurrent_jobs=1,
@@ -55,7 +56,17 @@ def build_library(tmp_path: Path) -> tuple[TestClient, LibraryJobManager, str]:
     with manager._lock:
         manager._records[job_id] = record
         manager._persist(record)
-    return TestClient(create_app(settings, manager)), manager, job_id
+    client = TestClient(create_app(settings, manager))
+    registered = client.post(
+        "/api/auth/register",
+        json={
+            "name": "Davi Teste",
+            "email": "davi@example.com",
+            "password": "senha-segura-123",
+        },
+    )
+    assert registered.status_code == 201
+    return client, manager, job_id
 
 
 def test_library_lists_completed_music_with_six_stems(
@@ -103,3 +114,26 @@ def test_unknown_stem_is_rejected(tmp_path: Path) -> None:
     finally:
         manager.shutdown()
 
+
+
+def test_another_user_cannot_see_or_stream_private_music(
+    tmp_path: Path,
+) -> None:
+    owner_client, manager, job_id = build_library(tmp_path)
+    another_client = TestClient(owner_client.app)
+    try:
+        registered = another_client.post(
+            "/api/auth/register",
+            json={
+                "name": "Outro Usuário",
+                "email": "outro@example.com",
+                "password": "outra-senha-segura-456",
+            },
+        )
+        assert registered.status_code == 201
+        assert another_client.get("/api/library").json()["items"] == []
+        hidden = another_client.get(f"/api/jobs/{job_id}/stems/guitar")
+        assert hidden.status_code == 404
+        assert hidden.json()["error"]["code"] == "JOB_NOT_FOUND"
+    finally:
+        manager.shutdown()

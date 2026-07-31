@@ -493,6 +493,7 @@ dependencies = [
     { name = "basic-pitch" },
     { name = "demucs" },
     { name = "fastapi" },
+    { name = "httpx" },
     { name = "numpy" },
     { name = "python-multipart" },
     { name = "setuptools" },
@@ -505,7 +506,6 @@ dependencies = [
 
 [package.dev-dependencies]
 dev = [
-    { name = "httpx" },
     { name = "pytest" },
 ]
 
@@ -514,6 +514,7 @@ requires-dist = [
     { name = "basic-pitch", specifier = ">=0.4.0" },
     { name = "demucs", specifier = ">=4.0.1" },
     { name = "fastapi", specifier = ">=0.139.2" },
+    { name = "httpx", specifier = ">=0.28.1" },
     { name = "numpy", specifier = ">=1.23.5,<1.24" },
     { name = "python-multipart", specifier = ">=0.0.22" },
     { name = "setuptools", specifier = "==81.0.0" },
@@ -525,10 +526,7 @@ requires-dist = [
 ]
 
 [package.metadata.requires-dev]
-dev = [
-    { name = "httpx", specifier = ">=0.28.1" },
-    { name = "pytest", specifier = ">=8.4.2" },
-]
+dev = [{ name = "pytest", specifier = ">=8.4.2" }]
 
 [[package]]
 name = "idna"

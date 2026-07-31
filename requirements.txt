@@ -8,5 +8,6 @@ tensorflow==2.11.1; sys_platform == "win32"
 tensorflow-intel==2.11.1; sys_platform == "win32"
 tensorflow-io-gcs-filesystem==0.31.0; sys_platform == "win32"
 fastapi>=0.139.2
+httpx>=0.28.1
 uvicorn>=0.51.0
 python-multipart>=0.0.22

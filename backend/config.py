@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import logging
 import os
+import re
 import shutil
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -11,6 +12,40 @@ from pathlib import Path
 
 LOGGER = logging.getLogger(__name__)
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
+
+
+def load_environment_file(path: Path | None = None) -> None:
+    """Load a local .env without overwriting process environment variables."""
+    env_path = path or PROJECT_ROOT / ".env"
+    if not env_path.is_file():
+        return
+
+    loaded = 0
+    for line_number, source_line in enumerate(
+        env_path.read_text(encoding="utf-8-sig").splitlines(), start=1
+    ):
+        line = source_line.strip()
+        if not line or line.startswith("#"):
+            continue
+        if line.startswith("export "):
+            line = line[7:].lstrip()
+        key, separator, raw_value = line.partition("=")
+        key = key.strip()
+        if not separator or not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", key):
+            LOGGER.warning("Ignoring invalid .env entry at line %d.", line_number)
+            continue
+        value = raw_value.strip()
+        if len(value) >= 2 and value[0] == value[-1] and value[0] in {"\"", "'"}:
+            value = value[1:-1]
+        elif " #" in value:
+            value = value.split(" #", 1)[0].rstrip()
+        if key not in os.environ:
+            os.environ[key] = value
+            loaded += 1
+    LOGGER.info("Loaded %d setting(s) from %s.", loaded, env_path)
+
+
+load_environment_file()
 
 
 def _positive_int(name: str, default: int) -> int:
@@ -100,11 +135,16 @@ def ensure_ffmpeg_on_path() -> Path | None:
 
 @dataclass(frozen=True, slots=True)
 class Settings:
-    """Runtime settings for uploads, workers, storage, and the front-end."""
+    """Runtime settings for uploads, workers, storage, auth, and the front-end."""
 
     job_root: Path = field(
         default_factory=lambda: Path(
             os.getenv("AUDIO_JOB_ROOT", PROJECT_ROOT / "data" / "jobs")
+        )
+    )
+    database_path: Path = field(
+        default_factory=lambda: Path(
+            os.getenv("MUSICAI_DATABASE_PATH", PROJECT_ROOT / "data" / "musicai.db")
         )
     )
     frontend_dir: Path = field(
@@ -121,9 +161,7 @@ class Settings:
         )
     )
     max_concurrent_jobs: int = field(
-        default_factory=lambda: _positive_int(
-            "AUDIO_MAX_CONCURRENT_JOBS", 1
-        )
+        default_factory=lambda: _positive_int("AUDIO_MAX_CONCURRENT_JOBS", 1)
     )
     process_timeout_seconds: int = field(
         default_factory=lambda: _positive_int(
@@ -140,7 +178,53 @@ class Settings:
             if origin.strip()
         )
     )
+    public_base_url: str = field(
+        default_factory=lambda: os.getenv(
+            "MUSICAI_PUBLIC_BASE_URL", "http://127.0.0.1:8000"
+        )
+    )
+    session_ttl_seconds: int = field(
+        default_factory=lambda: _positive_int(
+            "MUSICAI_SESSION_TTL_SECONDS", 30 * 24 * 60 * 60
+        )
+    )
+    password_reset_ttl_seconds: int = field(
+        default_factory=lambda: _positive_int(
+            "MUSICAI_PASSWORD_RESET_TTL_SECONDS", 60 * 60
+        )
+    )
+    secure_cookies: bool = field(
+        default_factory=lambda: os.getenv("MUSICAI_SECURE_COOKIES", "false").lower()
+        in {"1", "true", "yes"}
+    )
+    google_client_id: str | None = field(
+        default_factory=lambda: os.getenv("GOOGLE_CLIENT_ID")
+    )
+    google_client_secret: str | None = field(
+        default_factory=lambda: os.getenv("GOOGLE_CLIENT_SECRET")
+    )
+    google_redirect_uri: str | None = field(
+        default_factory=lambda: os.getenv("GOOGLE_REDIRECT_URI")
+    )
+    smtp_host: str | None = field(
+        default_factory=lambda: os.getenv("MUSICAI_SMTP_HOST")
+    )
+    smtp_port: int = field(
+        default_factory=lambda: _positive_int("MUSICAI_SMTP_PORT", 587)
+    )
+    smtp_username: str | None = field(
+        default_factory=lambda: os.getenv("MUSICAI_SMTP_USERNAME")
+    )
+    smtp_password: str | None = field(
+        default_factory=lambda: os.getenv("MUSICAI_SMTP_PASSWORD")
+    )
+    smtp_sender: str | None = field(
+        default_factory=lambda: os.getenv("MUSICAI_SMTP_SENDER")
+    )
+    smtp_starttls: bool = field(
+        default_factory=lambda: os.getenv("MUSICAI_SMTP_STARTTLS", "true").lower()
+        in {"1", "true", "yes"}
+    )
     ffmpeg_directory: Path | None = field(
         default_factory=ensure_ffmpeg_on_path
     )
-

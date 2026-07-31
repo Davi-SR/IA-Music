@@ -107,6 +107,7 @@ class FakeJobManager:
 def build_client(tmp_path: Path, max_bytes: int = 1024) -> tuple[TestClient, FakeJobManager]:
     settings = Settings(
         job_root=tmp_path / "jobs",
+        database_path=tmp_path / "test.db",
         frontend_dir=tmp_path / "missing-front",
         max_upload_bytes=max_bytes,
         max_concurrent_jobs=1,
@@ -115,7 +116,17 @@ def build_client(tmp_path: Path, max_bytes: int = 1024) -> tuple[TestClient, Fak
         cors_origins=(),
     )
     manager = FakeJobManager(settings.job_root)
-    return TestClient(create_app(settings, manager)), manager
+    client = TestClient(create_app(settings, manager))
+    registered = client.post(
+        "/api/auth/register",
+        json={
+            "name": "Teste MUSICAI",
+            "email": "teste@example.com",
+            "password": "senha-segura-123",
+        },
+    )
+    assert registered.status_code == 201
+    return client, manager
 
 
 def test_health(tmp_path: Path) -> None:

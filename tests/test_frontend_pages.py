@@ -1,7 +1,8 @@
-"""Static page separation checks for Home and Minhas Músicas."""
+"""Static page separation checks for the React production build."""
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 from fastapi.testclient import TestClient
@@ -14,6 +15,7 @@ from backend.library import LibraryJobManager
 def build_client(tmp_path: Path) -> tuple[TestClient, LibraryJobManager]:
     settings = Settings(
         job_root=tmp_path / "jobs",
+        database_path=tmp_path / "test.db",
         frontend_dir=PROJECT_ROOT / "Front" / "glass-effect2",
         max_upload_bytes=1024,
         max_concurrent_jobs=1,
@@ -23,6 +25,12 @@ def build_client(tmp_path: Path) -> tuple[TestClient, LibraryJobManager]:
     )
     manager = LibraryJobManager(settings)
     return TestClient(create_app(settings, manager)), manager
+
+
+def _entry_script(html: str) -> str:
+    match = re.search(r'src="(\./react-assets/[^"]+\.js)"', html)
+    assert match is not None
+    return match.group(1)
 
 
 def test_home_and_music_library_are_separate_pages(tmp_path: Path) -> None:
@@ -35,27 +43,26 @@ def test_home_and_music_library_are_separate_pages(tmp_path: Path) -> None:
         assert musics.status_code == 200
         assert 'data-page="musics"' not in home.text
         assert 'data-page="musics"' in musics.text
-        assert 'href="musics.html"' in musics.text
-        assert "active" in musics.text
-        assert 'aria-current="page"' in musics.text
+        assert _entry_script(home.text) != _entry_script(musics.text)
+        assert '<div id="root"></div>' in home.text
+        assert '<div id="root"></div>' in musics.text
     finally:
         manager.shutdown()
 
 
-def test_runtime_preloads_only_the_current_page_assets(
+def test_production_entries_use_react_chunks_without_legacy_runtimes(
     tmp_path: Path,
 ) -> None:
     client, manager = build_client(tmp_path)
     try:
-        config = client.get("/config.js").text
+        home = client.get("/").text
+        musics = client.get("/musics.html").text
+        shared_assets = home + musics
 
-        assert "isMusicsPage" in config
-        assert 'preloadModule("library-v3.js?v=5"' in config
-        assert 'preloadModule("youtube-v2.js?v=5"' in config
-        assert 'loadModule("library-v3.js?v=5"' in config
-        assert 'loadModule("youtube-v2.js?v=5"' in config
-        assert 'renderPrimaryNavigation("musics")' in config
-        assert "home-booting" in config
+        assert "react-assets/" in shared_assets
+        assert "config.js" not in shared_assets
+        assert "app.js" not in shared_assets
+        assert "youtube-v2.js" not in shared_assets
+        assert "library-v3.js" not in shared_assets
     finally:
         manager.shutdown()
-

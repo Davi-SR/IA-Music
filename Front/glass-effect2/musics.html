@@ -1,71 +1,25 @@
 <!doctype html>
 <html lang="pt-BR">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
       content="Biblioteca e mixer multitrack das músicas processadas no MUSICAI."
     />
     <meta name="theme-color" content="#050a14" />
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
     <title>Minhas Músicas — MUSICAI</title>
-    <link href="assets/css2_ac990486f183.css" rel="stylesheet" />
-    <link href="styles.css" rel="stylesheet" />
-    <script src="assets/iconify_654a1ef798a3.js"></script>
-    <script src="config.js"></script>
+    <link rel="preload" href="./assets/JTUSjIg1_i6t8kCHKm459WlhyyTh89_2f5adf1176f9.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="./assets/memvYaGs126MiZpBA-UvWbX2vVnXBb_2808bca2fb6d.woff2" as="font" type="font/woff2" crossorigin />
+    <link href="./assets/css2_ac990486f183.css" rel="stylesheet" />
+    <script type="module" crossorigin src="./react-assets/musics-CEY2vE9U.js"></script>
+    <link rel="modulepreload" crossorigin href="./react-assets/react-BVEWT1AG.js">
+    <link rel="modulepreload" crossorigin href="./react-assets/library-CYqcp2NU.js">
+    <link rel="stylesheet" crossorigin href="./react-assets/react-Ckooc6pf.css">
+    <link rel="stylesheet" crossorigin href="./react-assets/library-C0Uvpnn1.css">
   </head>
   <body data-page="musics">
-    <a class="skip-link" href="#library">Ir para minhas músicas</a>
-    <div id="cursor" aria-hidden="true"></div>
-    <div class="noise-overlay" aria-hidden="true"></div>
-    <div class="ambient-layer" aria-hidden="true">
-      <span class="liquid-blob liquid-blob--blue"></span>
-      <span class="liquid-blob liquid-blob--purple"></span>
-      <span class="liquid-blob liquid-blob--cyan"></span>
-      <div class="audio-grid"></div>
-    </div>
-
-    <header class="site-header">
-      <nav
-        class="nav-shell glass-panel glass-panel--static"
-        aria-label="Principal"
-      >
-        <a class="brand cursor-hover" href="index.html" aria-label="MUSICAI, início">
-          <span class="brand__name">MUSICAI</span>
-          <span class="brand__mark" aria-hidden="true">
-            <span
-              class="iconify"
-              data-icon="lucide:audio-waveform"
-              data-width="18"
-            ></span>
-          </span>
-        </a>
-        <div class="nav-links">
-          <a class="cursor-hover" href="index.html">Home</a>
-          <a class="cursor-hover active" href="musics.html" aria-current="page">
-            Minhas Músicas
-          </a>
-        </div>
-      </nav>
-    </header>
-
-    <main id="top"></main>
-
-    <footer class="site-footer">
-      <div class="footer-inner">
-        <a class="brand" href="index.html">
-          <span class="brand__name">MUSICAI</span>
-        </a>
-        <p>Sua biblioteca, suas faixas, sua mixagem.</p>
-      </div>
-    </footer>
-
-    <div
-      id="toast-region"
-      class="toast-region"
-      aria-live="polite"
-      aria-atomic="true"
-    ></div>
+    <div id="root"></div>
   </body>
 </html>
-
