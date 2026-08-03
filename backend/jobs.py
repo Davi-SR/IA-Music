@@ -351,6 +351,17 @@ class JobManager:
             "outtmpl": str(expected_path.with_suffix(".%(ext)s")),
             "quiet": True,
             "no_warnings": True,
+            "retries": 5,
+            "fragment_retries": 5,
+            "extractor_retries": 3,
+            "socket_timeout": 30,
+            "http_headers": {
+                "User-Agent": (
+                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                    "AppleWebKit/537.36 (KHTML, like Gecko) "
+                    "Chrome/126.0.0.0 Safari/537.36"
+                ),
+            },
             "postprocessors": [
                 {
                     "key": "FFmpegExtractAudio",
@@ -359,6 +370,17 @@ class JobManager:
                 }
             ],
         }
+        if self.settings.ffmpeg_directory:
+            options["ffmpeg_location"] = str(self.settings.ffmpeg_directory)
+        if self.settings.youtube_cookie_file:
+            if self.settings.youtube_cookie_file.is_file():
+                options["cookiefile"] = str(self.settings.youtube_cookie_file)
+            else:
+                LOGGER.warning(
+                    "Configured YouTube cookie file does not exist: %s",
+                    self.settings.youtube_cookie_file,
+                )
+
         LOGGER.info("Downloading YouTube source for job %s", job_id)
         with yt_dlp.YoutubeDL(options) as downloader:
             info = downloader.extract_info(source_url, download=True)
@@ -431,4 +453,3 @@ class JobManager:
             encoding="utf-8",
         )
         temporary_path.replace(metadata_path)
-

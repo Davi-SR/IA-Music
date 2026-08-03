@@ -233,3 +233,10 @@ class Settings:
     ffmpeg_directory: Path | None = field(
         default_factory=ensure_ffmpeg_on_path
     )
+    youtube_cookie_file: Path | None = field(
+        default_factory=lambda: (
+            Path(raw_path).expanduser()
+            if (raw_path := os.getenv("AUDIO_YOUTUBE_COOKIE_FILE"))
+            else None
+        )
+    )
