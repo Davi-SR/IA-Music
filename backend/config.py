@@ -60,6 +60,18 @@ def _positive_int(name: str, default: int) -> int:
         raise ValueError(f"{name} must be greater than zero.")
     return value
 
+def _positive_float(name: str, default: float) -> float:
+    raw_value = os.getenv(name)
+    if raw_value is None:
+        return default
+    try:
+        value = float(raw_value)
+    except ValueError as exc:
+        raise ValueError(f"{name} must be a number.") from exc
+    if value <= 0:
+        raise ValueError(f"{name} must be greater than zero.")
+    return value
+
 
 def _valid_ffmpeg_directory(path: Path) -> Path | None:
     """Return a directory only when both required binaries exist."""
@@ -170,6 +182,18 @@ class Settings:
     )
     demucs_executable: str = field(
         default_factory=lambda: os.getenv("AUDIO_DEMUCS_EXECUTABLE", "demucs")
+    )
+    demucs_device: str = field(
+        default_factory=lambda: os.getenv("AUDIO_DEMUCS_DEVICE", "cpu")
+    )
+    demucs_segment_seconds: float = field(
+        default_factory=lambda: _positive_float("AUDIO_DEMUCS_SEGMENT_SECONDS", 8.0)
+    )
+    demucs_shifts: int = field(
+        default_factory=lambda: int(os.getenv("AUDIO_DEMUCS_SHIFTS", "0"))
+    )
+    demucs_jobs: int = field(
+        default_factory=lambda: _positive_int("AUDIO_DEMUCS_JOBS", 1)
     )
     cors_origins: tuple[str, ...] = field(
         default_factory=lambda: tuple(

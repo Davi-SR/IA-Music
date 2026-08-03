@@ -259,11 +259,26 @@ class JobManager:
                 self.settings.demucs_executable,
                 "-n",
                 DEMUCS_MODEL,
+                "--device",
+                self.settings.demucs_device,
+                "--segment",
+                str(self.settings.demucs_segment_seconds),
+                "--shifts",
+                str(self.settings.demucs_shifts),
+                "--jobs",
+                str(self.settings.demucs_jobs),
                 "--out",
                 str(separated_dir),
                 str(input_path),
             ]
-            LOGGER.info("Starting Demucs job %s", job_id)
+            LOGGER.info(
+                "Starting Demucs job %s with device=%s segment=%s shifts=%s jobs=%s",
+                job_id,
+                self.settings.demucs_device,
+                self.settings.demucs_segment_seconds,
+                self.settings.demucs_shifts,
+                self.settings.demucs_jobs,
+            )
             result = subprocess.run(
                 command,
                 check=True,
@@ -323,6 +338,12 @@ class JobManager:
             )
         except subprocess.CalledProcessError as exc:
             diagnostic = (exc.stderr or exc.stdout or str(exc)).strip()[-4000:]
+            if exc.returncode < 0:
+                diagnostic = (
+                    f"Demucs was terminated by signal {-exc.returncode}. "
+                    "This usually means the container ran out of memory or CPU time.\n"
+                    f"{diagnostic}"
+                ).strip()[-4000:]
             self._fail(
                 job_id,
                 "SEPARATION_FAILED",
