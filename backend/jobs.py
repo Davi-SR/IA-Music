@@ -372,15 +372,25 @@ class JobManager:
         }
         if self.settings.ffmpeg_directory:
             options["ffmpeg_location"] = str(self.settings.ffmpeg_directory)
+        cookie_loaded = False
         if self.settings.youtube_cookie_file:
             if self.settings.youtube_cookie_file.is_file():
                 options["cookiefile"] = str(self.settings.youtube_cookie_file)
+                cookie_loaded = True
             else:
                 LOGGER.warning(
                     "Configured YouTube cookie file does not exist: %s",
                     self.settings.youtube_cookie_file,
                 )
 
+        LOGGER.info(
+            "yt-dlp YouTube environment for job %s: version=%s deno=%s cookiefile=%s cookie_bytes=%s",
+            job_id,
+            getattr(yt_dlp.version, "__version__", "unknown"),
+            shutil.which("deno") or "not-found",
+            "configured" if cookie_loaded else "not-configured",
+            self.settings.youtube_cookie_file.stat().st_size if cookie_loaded else 0,
+        )
         LOGGER.info("Downloading YouTube source for job %s", job_id)
         with yt_dlp.YoutubeDL(options) as downloader:
             info = downloader.extract_info(source_url, download=True)
