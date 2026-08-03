@@ -61,6 +61,20 @@ def _positive_int(name: str, default: int) -> int:
     return value
 
 
+def _bounded_positive_int(name: str, default: int, maximum: int) -> int:
+    value = _positive_int(name, default)
+    if value > maximum:
+        LOGGER.warning(
+            "%s=%s is above the maximum %s; using %s.",
+            name,
+            value,
+            maximum,
+            maximum,
+        )
+        return maximum
+    return value
+
+
 def _valid_ffmpeg_directory(path: Path) -> Path | None:
     """Return a directory only when both required binaries exist."""
     directory = path.parent if path.is_file() else path
@@ -175,7 +189,9 @@ class Settings:
         default_factory=lambda: os.getenv("AUDIO_DEMUCS_DEVICE", "cpu")
     )
     demucs_segment_seconds: int = field(
-        default_factory=lambda: _positive_int("AUDIO_DEMUCS_SEGMENT_SECONDS", 8)
+        default_factory=lambda: _bounded_positive_int(
+            "AUDIO_DEMUCS_SEGMENT_SECONDS", 7, 7
+        )
     )
     demucs_shifts: int = field(
         default_factory=lambda: int(os.getenv("AUDIO_DEMUCS_SHIFTS", "0"))
