@@ -1,0 +1,13 @@
+services:
+  backend:
+    environment:
+      APP_ENV: homologation
+      MUSICAI_SECURE_COOKIES: "true"
+    volumes:
+      - musicai_homolog_data:/data
+      - musicai_homolog_model_cache:/model-cache
+  frontend:
+    ports: ["8080:80"]
+volumes:
+  musicai_homolog_data:
+  musicai_homolog_model_cache:

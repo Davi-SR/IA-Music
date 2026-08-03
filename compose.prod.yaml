@@ -1,0 +1,9 @@
+services:
+  backend:
+    environment:
+      APP_ENV: production
+      MUSICAI_SECURE_COOKIES: "true"
+      AUDIO_CORS_ORIGINS: ""
+    expose: ["8000"]
+  frontend:
+    ports: ["80:80"]
