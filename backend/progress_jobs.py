@@ -5,6 +5,7 @@ from __future__ import annotations
 import logging
 import queue
 import re
+import shutil
 import subprocess
 import threading
 import time
