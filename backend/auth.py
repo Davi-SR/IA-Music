@@ -574,9 +574,7 @@ def _send_reset_email(settings: Settings, recipient: str, reset_url: str) -> Non
     message["From"] = settings.smtp_sender
     message["To"] = recipient
     message.set_content(
-        "Recebemos uma solicitação para redefinir sua senha.
-
-"
+        "Recebemos uma solicitação para redefinir sua senha."
         f"Acesse: {reset_url}\n\n"
         "Se você não solicitou isso, ignore esta mensagem."
     )
