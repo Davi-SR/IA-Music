@@ -1,5 +1,6 @@
 export const config = Object.freeze({
-  apiBaseUrl: "",
+  // Production uses the Railway API; local development keeps the Vite proxy.
+  apiBaseUrl: (import.meta.env.VITE_API_BASE_URL ?? "").replace(/\/+$/, ""),
   maxFileSizeBytes: 500 * 1024 * 1024,
   uploadTimeoutMs: 10 * 60 * 1000,
   requestTimeoutMs: 15 * 1000,

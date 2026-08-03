@@ -560,7 +560,7 @@ def _set_cookie(response: Response, token: str, settings: Settings) -> None:
         max_age=settings.session_ttl_seconds,
         httponly=True,
         secure=settings.secure_cookies,
-        samesite="lax",
+        samesite=settings.cookie_samesite,
         path="/",
     )
 
@@ -574,7 +574,9 @@ def _send_reset_email(settings: Settings, recipient: str, reset_url: str) -> Non
     message["From"] = settings.smtp_sender
     message["To"] = recipient
     message.set_content(
-        "Recebemos uma solicitação para redefinir sua senha.\n\n"
+        "Recebemos uma solicitação para redefinir sua senha.
+
+"
         f"Acesse: {reset_url}\n\n"
         "Se você não solicitou isso, ignore esta mensagem."
     )
@@ -764,6 +766,9 @@ def install_auth_routes(
         )
         if first:
             service.claim_unowned_jobs(legacy_job_ids, user.id)
-        response = RedirectResponse(f"/{_safe_next_path(next_path)}", status_code=303)
+        frontend_url = settings.public_base_url.rstrip("/")
+        response = RedirectResponse(
+            f"{frontend_url}/{_safe_next_path(next_path)}", status_code=303
+        )
         _set_cookie(response, service.create_session(user.id), settings)
         return response

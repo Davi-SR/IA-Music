@@ -197,6 +197,11 @@ class Settings:
         default_factory=lambda: os.getenv("MUSICAI_SECURE_COOKIES", "false").lower()
         in {"1", "true", "yes"}
     )
+    cookie_samesite: str = field(
+        default_factory=lambda: os.getenv("MUSICAI_COOKIE_SAMESITE", "lax").lower()
+        if os.getenv("MUSICAI_COOKIE_SAMESITE", "lax").lower() in {"lax", "strict", "none"}
+        else "lax"
+    )
     google_client_id: str | None = field(
         default_factory=lambda: os.getenv("GOOGLE_CLIENT_ID")
     )
