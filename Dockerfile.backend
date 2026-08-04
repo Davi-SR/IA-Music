@@ -9,13 +9,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     MUSICAI_DATABASE_PATH=/data/musicai.db \
     AUDIO_FRONTEND_DIR=/app/empty-frontend \
     TORCH_HOME=/model-cache/torch \
-    XDG_CACHE_HOME=/model-cache \
-    OMP_NUM_THREADS=1 \
-    MKL_NUM_THREADS=1 \
-    OPENBLAS_NUM_THREADS=1 \
-    NUMEXPR_NUM_THREADS=1 \
-    PYTORCH_JIT=0
-
+    XDG_CACHE_HOME=/model-cache
 WORKDIR /app
 
 RUN apt-get update \
