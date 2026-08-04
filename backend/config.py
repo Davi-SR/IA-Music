@@ -190,7 +190,7 @@ class Settings:
     )
     demucs_segment_seconds: int = field(
         default_factory=lambda: _bounded_positive_int(
-            "AUDIO_DEMUCS_SEGMENT_SECONDS", 7, 7
+            "AUDIO_DEMUCS_SEGMENT_SECONDS", 4, 7
         )
     )
     demucs_shifts: int = field(

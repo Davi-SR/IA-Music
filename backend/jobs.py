@@ -338,16 +338,21 @@ class JobManager:
             )
         except subprocess.CalledProcessError as exc:
             diagnostic = (exc.stderr or exc.stdout or str(exc)).strip()[-4000:]
+            user_message = "Não foi possível separar este áudio."
             if exc.returncode < 0:
                 diagnostic = (
                     f"Demucs was terminated by signal {-exc.returncode}. "
                     "This usually means the container ran out of memory or CPU time.\n"
                     f"{diagnostic}"
                 ).strip()[-4000:]
+                user_message = (
+                    "O servidor ficou sem recursos para separar esse áudio. "
+                    "Estamos ajustando a capacidade de processamento."
+                )
             self._fail(
                 job_id,
                 "SEPARATION_FAILED",
-                "Não foi possível separar este áudio.",
+                user_message,
                 diagnostic,
             )
         except Exception as exc:
